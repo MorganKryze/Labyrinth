@@ -7,7 +7,6 @@ namespace Labyrinth
 {
     public abstract class Methode
     {
-        
         #region Méthodes utilitaires
         public static void Sortie()
         {
@@ -91,7 +90,6 @@ namespace Labyrinth
             }
             
         }
-
         public static int Selection (string[]entree, string texte, string texteAdditionnel = "", string texteSpecial = "")
         {
             int position = 0;
@@ -119,7 +117,7 @@ namespace Labyrinth
                     case ConsoleKey.DownArrow: if(position == entree.Length-1)position = 0; else if(position < entree.Length-1)position++;break;
                     case ConsoleKey.S: if(position == entree.Length-1)position = 0; else if(position < entree.Length-1)position++;break;
                     case ConsoleKey.Enter:choixFait = true;break;
-                    case ConsoleKey.Escape:Methode.Sortie();break;
+                    case ConsoleKey.Escape:position=-1;choixFait = true;break;
                 }
                 recurrence++;
             }
@@ -227,17 +225,6 @@ namespace Labyrinth
             }
             Methode.Couleur(matrice, matrice[1, 1], 0);
         }
-        public static char SelectionDifficulté()
-        {
-            switch(Methode.Selection(new string[]{"A - Débutant   ","B - Moyen      ","C - Difficile  ","D - Expert     "}, "-- Lancement de la partie --","Choisir la difficulté du labyrinthe : "))
-            {
-                case 0:return 'A';
-                case 1:return 'B';
-                case 2:return 'C';
-                case 3:return 'D';
-                default : return ' ';
-            }
-        }
         public static bool DefinirJoueur( Classement classement,Joueur player)
         {
             string[]choixDeJoueur = new string[classement.joueurs.Count+1];
@@ -247,7 +234,8 @@ namespace Labyrinth
                 else choixDeJoueur[i]= classement.joueurs[i-1].nom;
             }
             int position = Methode.Selection(choixDeJoueur, "-- Selection du joueur --","Veuillez choisir votre pseudonyme, ou le créer s'il n'est pas dans la liste :");
-            if (position == 0)
+            if (position == -1)return true;
+            else if (position == 0)
             {
                 do
                 {
@@ -260,7 +248,6 @@ namespace Labyrinth
                 {
                     player.nom = classement.joueurs[position-1].nom;
                     player.scores = classement.joueurs[position-1].scores;
-                    return true;      
                 }
             ResetColor();
             Clear();
@@ -268,6 +255,7 @@ namespace Labyrinth
         }
         public static void DebutDeJeu()
         {
+            Clear();
             string titre = @"
  _             _           _                _       _   _          
 | |           | |         | |              (_)     | | | |         
@@ -280,7 +268,7 @@ namespace Labyrinth
             switch(Methode.Selection(new string[]{"Jouer     ","Options   ","Sortir    "},"", "Bienvenue dans le menu principal ! Utilisez les flèches du clavier pour naviguer et la touche [ENTRÉE] pour valider.",titre))
             {
                 case 1 : Personnage.symbole = ChoixSymbole();break;
-                case 2 : Methode.Sortie();break;
+                case 2 : case -1: Methode.Sortie();break;
                 default: break;
             }
             Chargement("-- Lancement du jeu --");
@@ -294,7 +282,6 @@ namespace Labyrinth
             }
             return 'π';
         }
-
         public static void ReglesDuJeu()
         {
             string regles = @"                                             _______________________
@@ -324,6 +311,5 @@ namespace Labyrinth
 
         }     
         #endregion
-    
     }
 }

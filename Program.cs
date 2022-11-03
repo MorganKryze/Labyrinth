@@ -6,12 +6,12 @@ namespace Labyrinth
 {
     public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Debut :
+            
             #region Démarrage
             Methode.DebutDeJeu();
-            bool sessionChoisie = false;
             #endregion
             
             ChangementDeSession :
@@ -19,7 +19,7 @@ namespace Labyrinth
             #region Création du classement et joueur
             Classement classement = new Classement();
             Joueur player = new Joueur();
-            bool playerExiste = Methode.DefinirJoueur(classement, player);
+            if (Methode.DefinirJoueur(classement, player)) goto Debut;
             Joueur.nomActuel = player.nom;
             #endregion
                         
@@ -30,7 +30,14 @@ namespace Labyrinth
             PasDeChangementDeSession :
 
             #region Génération du plateau 
-            if (sessionChoisie)playerExiste = true;
+            switch(Methode.Selection(new string[]{"A - Débutant   ","B - Moyen      ","C - Difficile  ","D - Expert     "}, "-- Lancement de la partie --","Choisir la difficulté du labyrinthe : "))
+            {
+                case 0: Plateau.difficulté = 'A';break;
+                case 1: Plateau.difficulté = 'B';break;
+                case 2: Plateau.difficulté = 'C';break;
+                case 3: Plateau.difficulté = 'D';break;
+                case -1 : goto ChangementDeSession;
+            }
             Plateau plateau = new Plateau();
             Personnage pion = new Personnage(plateau);
             #endregion
@@ -45,7 +52,7 @@ namespace Labyrinth
                 Console.WriteLine("\nAppuyez sur [ENTRÉE] pour commencer le jeu ! ");
                 Console.ResetColor();
                 touche = Console.ReadKey();
-                if (touche.Key == ConsoleKey.Escape) Methode.Sortie();
+                if (touche.Key == ConsoleKey.Escape) goto PasDeChangementDeSession;
             }
             plateau.matrice[pion.positionActuelle.X,pion.positionActuelle.Y] = 5;
             Stopwatch chronometre = new Stopwatch();
@@ -53,14 +60,14 @@ namespace Labyrinth
             #endregion
 
             #region Boucle de jeu
-            while (!pion.EstArrive())pion.Deplacement(plateau);
+            while (!pion.EstArrive())if (pion.Deplacement(plateau)) goto PasDeChangementDeSession;
             #endregion
 
             #region Fin de jeu
             chronometre.Stop();
             TimeSpan temps = chronometre.Elapsed;
             string tempsString = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",temps.Hours, temps.Minutes, temps.Seconds,temps.Milliseconds / 10);
-            if(playerExiste)
+            if(classement.joueurs.IndexOf(player) != -1)
             {
                 int indice =-1;
                 for(int i = 0; i < classement.joueurs.Count; i++)if(classement.joueurs[i].nom == player.nom) indice = i;
@@ -71,8 +78,7 @@ namespace Labyrinth
                         case 'C' : if (player.scores[2] > temps||player.scores[2]==TimeSpan.Zero) classement.joueurs[indice].scores[2] = temps; break;
                         case 'D' : if (player.scores[3] > temps||player.scores[3]==TimeSpan.Zero) classement.joueurs[indice].scores[3] = temps; break;
                     }
-            }
-            else
+            }else
             {
                 switch(Plateau.difficulté)
                 {
@@ -116,16 +122,8 @@ namespace Labyrinth
             #region Nouvelle partie
             if (Methode.Selection(new string[]{"oui","non"}, "-- Fin de partie --","Souhaitez-vous jouer à nouveau ?")==0)
             {
-                if (Methode.Selection(new string[]{"oui","non"},"-- Selection de la session --",$"Souhaitez-vous continuer avec la session de jeu {Joueur.nomActuel}")==0)
-                {
-                    sessionChoisie=true;
-                    goto PasDeChangementDeSession;
-                }
-                else 
-                {
-                    sessionChoisie = false;
-                    goto ChangementDeSession;
-                }
+                if (Methode.Selection(new string[]{"oui","non"},"-- Selection de la session --",$"Souhaitez-vous continuer avec la session de jeu {Joueur.nomActuel}")==0)goto PasDeChangementDeSession;
+                else goto ChangementDeSession;
             }else goto Debut;
             #endregion
         }

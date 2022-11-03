@@ -29,6 +29,8 @@ namespace Labyrinth
         #endregion
 
         #region Méthodes
+        /* archive méthode
+        
         public void Deplacement(Plateau labyrinthe)
         {
             labyrinthe.AffichagePlateau();
@@ -40,6 +42,19 @@ namespace Labyrinth
                 case ConsoleKey.D : case ConsoleKey.RightArrow : Mouvement(labyrinthe,4); break;
                 case ConsoleKey.Escape : Methode.Sortie(); break;
             }
+        }*/
+        public bool Deplacement(Plateau labyrinthe)
+        {
+            labyrinthe.AffichagePlateau();
+            switch (Console.ReadKey().Key)
+            {
+                case ConsoleKey.Z :case ConsoleKey.UpArrow : Mouvement(labyrinthe,1); break;
+                case ConsoleKey.Q : case ConsoleKey.LeftArrow : Mouvement(labyrinthe,2); break;
+                case ConsoleKey.S : case ConsoleKey.DownArrow : Mouvement(labyrinthe,3); break;
+                case ConsoleKey.D : case ConsoleKey.RightArrow : Mouvement(labyrinthe,4); break;
+                case ConsoleKey.Escape : return true;
+            }
+            return false;
         }
         public void Mouvement (Plateau labyrinthe, int cas)
         {

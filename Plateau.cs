@@ -20,7 +20,6 @@ namespace Labyrinth
         {
             depart = new Position(0,0);
             arrivee = new Position(0,0);
-            difficulté = Methode.SelectionDifficulté();
             switch (difficulté)
             {
                     case 'A' : taille = 5; break;
