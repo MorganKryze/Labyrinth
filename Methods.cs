@@ -6,9 +6,12 @@ using static System.Convert;
 
 namespace Labyrinth
 {
-    public abstract class Methods
+    
+    /// <summary> This class contains core methods for the Labyrinth game and utility methods for the whole program.</summary>
+    abstract class Methods
     {
         #region Core Methods
+        /// <summary> This method is used to display the main menu of the game.</summary>
         public static void MainMenu()
         {
             Clear();
@@ -30,6 +33,8 @@ namespace Labyrinth
             }
             LoadingScreen("-- Launching the game --");
         }
+        
+        /// <summary>This method is used to display the rules of the game.</summary>
         public static void Rules()
         {
             string rules = @"                                             _______________________
@@ -58,6 +63,11 @@ namespace Labyrinth
             Pause();
 
         }
+        
+        /// <summary>This method is used to define the current session.</summary>
+        /// <param name= "ranking"> Display the choices among all of the sessions.</param>
+        /// <param name= "player"> The player who is playing the game.</param>
+        /// <returns> Wether or not the client chose to step back.</returns>
         public static bool DefineSession(Ranking ranking,Player player)
         {
             string[]sessionChoices = new string[ranking.PlayersList.Count+1];
@@ -98,11 +108,14 @@ namespace Labyrinth
         #endregion
 
         #region Utility Methods
+        /// <summary>This method is used to pause the program.</summary>
         public static void Pause()
         {
             WriteLine("\nPress [ENTER] to continue...");
             ReadLine();
         }
+        
+        /// <summary>This method is used to display a loading screen.</summary>
         public static void LoadingScreen(string text)
         {
             for (int i = 1; i < text.Length-1; i++)
@@ -138,31 +151,37 @@ namespace Labyrinth
             }
             Clear();
         }
-        public static void Title (string text,  string additionnalText = "",string specialText = "", int recurrence = 0)
+        
+        /// <summary>This method is used to display a title.</summary>
+        /// <param name= "text"> The content of the title.</param>
+        /// <param name= "additionalText"> The subtitle of the title.</param>
+        /// <param name= "specialText"> Special text as a font.</param>
+        /// <param name= "recurrence"> Whether the title has been displayed yet or not.</param>
+        public static void Title (string text,  string additionalText = "",string specialText = "", int recurrence = 0)
         {
             Clear();
             if (recurrence != 0)
             {
                 if (text != "")WriteLine($"\n{text}\n");
                 if (specialText != "")WriteLine($"\n{specialText}\n");
-                if (additionnalText != "")WriteLine($"\n{additionnalText}\n");
+                if (additionalText != "")WriteLine($"\n{additionalText}\n");
             }else
             {
                 if (text != "")WriteLine($"\n{text}\n");
                 if (specialText != "")WriteLine($"\n{specialText}\n");
-                if (additionnalText != "") 
+                if (additionalText != "") 
                 {
                     WriteLine("");
-                    for(int i = 0; i < additionnalText.Length; i++)
+                    for(int i = 0; i < additionalText.Length; i++)
                     {
-                        Write(additionnalText[i]);
+                        Write(additionalText[i]);
                         Sleep(50);
                         if(KeyAvailable)
                         {
                             ConsoleKeyInfo keyPressed = ReadKey(true);
                             if(keyPressed.Key == ConsoleKey.Enter||keyPressed.Key == ConsoleKey.Escape)
                             {
-                                Write(additionnalText.Substring(i+1));
+                                Write(additionalText.Substring(i+1));
                                 break;
                             }
                         }
@@ -172,7 +191,14 @@ namespace Labyrinth
             }
             
         }
-        public static int ScrollingMenu (string[] choices, string text, string additionnalText = "", string specialText = "")
+        
+        /// <summary>This method is used to display a scrolling menu.</summary>
+        /// <param name= "choices"> The choices of the menu.</param>
+        /// <param name= "text"> The content of the title.</param>
+        /// <param name= "additionalText"> The subtitle of the title.</param>
+        /// <param name= "specialText"> Special text as a font.</param>
+        /// <returns> The position of the choice selected.</returns>
+        public static int ScrollingMenu (string[] choices, string text, string additionalText = "", string specialText = "")
         {
             int position = 0;
             bool choiceMade = false;
@@ -180,7 +206,7 @@ namespace Labyrinth
             while (!choiceMade)
             {
                 Clear();
-                Title(text,additionnalText,specialText,recurrence);
+                Title(text,additionalText,specialText,recurrence);
                 string[]currentChoice = new string[choices.Length];
                 for (int i = 0; i < choices.Length; i++)
                 {
@@ -208,6 +234,8 @@ namespace Labyrinth
             }
             return position;
         }
+        
+        /// <summary>This method is used to exit the game.</summary>
         public static void FinalExit()
         {
             Clear();

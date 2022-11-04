@@ -4,30 +4,40 @@ using static System.Environment;
 
 namespace Labyrinth
 {
-    public class GamePawn
+    /// <summary>The game pawn class</summary>
+    class GamePawn
     {
         
         #region Attributes
+        /// <summary>The current position of the pawn.</summary>
         public Position CurrentPosition {get; set;}
+        /// <summary>The final position of the pawn.</summary>
         public Position ArrivalPosition {get; set;}
+        /// <summary>The symbol of the pawn.</summary>
         public static char symbol = 'π';
 
         #endregion
 
         #region Constructor
-        public GamePawn(Board labyrinthe)
+        /// <summary>This method is used to initialize a new instance of the <see cref="T:Labyrinth.GamePawn"/> class.</summary>
+        /// <param name="labyrinth">The generated board for the game.</param>
+        public GamePawn(Board labyrinth)
         {
-            CurrentPosition = labyrinthe.Start;
-            ArrivalPosition = labyrinthe.End;
+            CurrentPosition = labyrinth.Start;
+            ArrivalPosition = labyrinth.End;
         }
-
         #endregion
 
         #region Utility Methods
+        /// <summary>This method is used to give a string of the gamepawn.</summary>
+        /// <returns>A string of the current position.</returns>
         public override string ToString() => CurrentPosition.ToString();
         #endregion
 
         #region Methods
+        /// <summary>This method is used to recieve the keypressed, and make the pawn move in consequence.</summary>
+        /// <param name="labyrinth">The generated board for the game.</param>
+        /// <returns>Wether the player has pressed [ESCAPE] and wants to go to the previous page or not.</returns>
         public bool Displacement(Board labyrinth)
         {
             labyrinth.PrintBoard();
@@ -41,6 +51,9 @@ namespace Labyrinth
             }
             return false;
         }
+        /// <summary>This method is used to move the pawn if the next position is available.</summary>
+        /// <param name="labyrinth">The generated board for the game.</param>
+        /// <param name="direction">The direction in which the pawn is moving.</param>
         public void Movement (Board labyrinth, int direction)
         {
             switch(direction)

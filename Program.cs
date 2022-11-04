@@ -5,9 +5,11 @@ using static System.IO.File;
 
 namespace Labyrinth
 {
-    public class Program
+    /// <summary>The main class where the core of the program is.</summary>
+    class Program
     {
-        public static void Main(string[] args)
+        /// <summary>The main method.</summary>
+        public static void Main()
         {
             Main_Menu :
 
@@ -99,9 +101,9 @@ namespace Labyrinth
             #endregion
             
             #region New game ?
-            if (Methods.ScrollingMenu(new string[]{"yes ","no  "}, "-- End of the game --","Do you want to play agin?")==0)
+            if (Methods.ScrollingMenu(new string[]{"Yes ","No  "}, "-- End of the game --","Do you want to play agin?")==0)
             {
-                if (Methods.ScrollingMenu(new string[]{"yes ","no  "},"-- Session selection --",$"Do you want to stay connected to the session {Player.s_SessionName}?")==0)goto Board_Creation;
+                if (Methods.ScrollingMenu(new string[]{"Yes ","No  "},"-- Session selection --",$"Do you want to stay connected to the session {Player.s_SessionName}?")==0)goto Board_Creation;
                 else goto Player_Creation;
             }else goto Main_Menu;
             #endregion

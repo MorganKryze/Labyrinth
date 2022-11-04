@@ -3,15 +3,23 @@ using static System.Console;
 
 namespace Labyrinth
 {
+    /// <summary>The player class</summary>
     public class Player
     {
         #region Attributes
+        /// <summary>The name of the player.</summary>
         public string Name {get; set;}
+        
+        /// <summary>The scores of the player in the different labyrinths.</summary>
         public List <TimeSpan> Scores {get; set;}
+
+        /// <summary>The current session the player is in.</summary>
         public static string? s_SessionName {get; set;}
         #endregion
         
         #region Constructor
+        /// <summary>This method is used to initialize a new instance of the <see cref="T:Labyrinth.Player"/> class.</summary>
+        /// <param name="name">The name of the player is optional. You can either set it from the instance, or define it later on.</param>
         public Player(string name = "")
         {
             Name = name;
@@ -20,6 +28,7 @@ namespace Labyrinth
         #endregion
         
         #region Properties
+        /// <summary>This property is used to get the name of the player whithout the visual spaces.</summary>
         public static string CutName
         {
             set
@@ -31,6 +40,7 @@ namespace Labyrinth
         #endregion
 
         #region Utility Methods
+        /// <summary>This method is used to display the scores of the player.</summary>
         public override string ToString()
         {
             string text = Name;
@@ -40,6 +50,8 @@ namespace Labyrinth
             }
             return text;
         }
+        /// <summary>This method is used to check in the list of player if the player is already in it.</summary>
+        /// <returns>Wether the player is in the list or not.</returns>
         public bool IsNewPlayer()
         {
             string[] documentLines = File.ReadAllLines(Ranking.s_StoragePath);
@@ -50,6 +62,8 @@ namespace Labyrinth
             }
             return true;
         }
+        /// <summary>This method is used to get the index of the player in the list.</summary>
+        /// <returns>The index of the player in the list.</returns>
         public int IndexOfPlayer()
         {
             string[] documentLines = File.ReadAllLines(Ranking.s_StoragePath);
@@ -60,11 +74,13 @@ namespace Labyrinth
             }
             return -1;
         }
+        /// <summary>This method is used to change the pawn symbol.</summary>
+        /// <returns>The symbol of the pawn as a char.</returns>
         public static char ChangeSymbol ()
         {
-            if(Methods.ScrollingMenu(new string[]{"Oui","Non"},"-- Options --","Le pion par défaut est le π, souhaitez-vous le changer ?")==0)
+            if(Methods.ScrollingMenu(new string[]{"Yes ","No "},"-- Options --","The default pawn is π, would you like to change it?")==0)
             {
-                Write("\nVeuillez saisir le caractère que vous souhaitez utiliser : ");
+                Write("\nPlease type your replacement character: ");
                 return ReadKey().KeyChar;
             }
             return 'π';

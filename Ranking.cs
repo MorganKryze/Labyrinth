@@ -4,15 +4,19 @@ using static System.Environment;
 
 namespace Labyrinth
 {
-    public class Ranking
+    /// <summary>The ranking class</summary>
+    class Ranking
     {
         
         #region Attributes
+        /// <summary>The list in which the players are stored.</summary>
         public List<Player> PlayersList {get; set;}
+        /// <summary>The path of the file where the ranking is stored.</summary>
         public static string s_StoragePath = "Storage.txt";
         #endregion
 
         #region Constructor
+        /// <summary>This method initializes a new instance of the <see cref="T:Labyrinth.Ranking"/> class.</summary>
         public Ranking()
         {
             PlayersList = new List<Player>();
@@ -27,6 +31,8 @@ namespace Labyrinth
         #endregion
 
         #region Methods
+        /// <summary>This method is used to display the ranking.</summary>
+        /// <returns>The ranking as a string.</returns>
         public override string ToString()
         {
             string text = "";
@@ -38,6 +44,8 @@ namespace Labyrinth
             }
             return text;
         }
+        /// <summary>This method is used to sort the ranking according to a labyrinth difficulty.</summary>
+        /// <returns>The ranking sorted as a string table.</returns>
         public string[] LeaderBoardSorting()
         {
             List<Player> playersListSorted = new List<Player>();
