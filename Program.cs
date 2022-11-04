@@ -1,6 +1,7 @@
 ﻿using System;
-using static System.Console;
 using System.Diagnostics;
+using static System.Console;
+using static System.IO.File;
 
 namespace Labyrinth
 {
@@ -8,123 +9,101 @@ namespace Labyrinth
     {
         public static void Main(string[] args)
         {
-            Debut :
-            
-            #region Démarrage
-            Methode.DebutDeJeu();
-            #endregion
-            
-            ChangementDeSession :
+            Main_Menu :
 
-            #region Création du classement et joueur
-            Classement classement = new Classement();
-            Joueur player = new Joueur();
-            if (Methode.DefinirJoueur(classement, player)) goto Debut;
-            Joueur.nomActuel = player.nom;
-            #endregion
-                        
-            #region Règles du jeu
-            Methode.ReglesDuJeu();
+            #region Lobby
+            Methods.MainMenu();
             #endregion
             
-            PasDeChangementDeSession :
+            Player_Creation :
 
-            #region Génération du plateau 
-            switch(Methode.Selection(new string[]{"A - Débutant   ","B - Moyen      ","C - Difficile  ","D - Expert     "}, "-- Lancement de la partie --","Choisir la difficulté du labyrinthe : "))
+            #region Setting up the player
+            Ranking ranking = new Ranking();
+            Player player = new Player();
+            if (Methods.DefineSession(ranking, player)) goto Main_Menu;
+            Methods.Rules();
+            #endregion
+            
+            Board_Creation :
+
+            #region Setting up the board
+            Board.s_Difficulty = Methods.ScrollingMenu(new string[]{"A - Beginner   ","B - Medium     ","C - Tricky     ","D - Expert     "}, "-- Setting the difficulty --","PLease choose wisely the difficulty of the labyrinth: ");
+            if(Board.s_Difficulty == -1) goto Player_Creation;
+            Board plateau = new Board();
+            GamePawn pawn = new GamePawn(plateau);
+            #endregion
+
+            #region Start of the game
+            ConsoleKeyInfo keyPressed = new ConsoleKeyInfo();
+            while (keyPressed.Key != ConsoleKey.Enter)
             {
-                case 0: Plateau.difficulté = 'A';break;
-                case 1: Plateau.difficulté = 'B';break;
-                case 2: Plateau.difficulté = 'C';break;
-                case 3: Plateau.difficulté = 'D';break;
-                case -1 : goto ChangementDeSession;
-            }
-            Plateau plateau = new Plateau();
-            Personnage pion = new Personnage(plateau);
-            #endregion
-
-            #region Lancement du jeu
-            ConsoleKeyInfo touche = new ConsoleKeyInfo();
-            while (touche.Key != ConsoleKey.Enter)
-            {
-                plateau.AffichagePlateau();
+                plateau.PrintBoard();
                 Console.BackgroundColor = ConsoleColor.DarkRed;
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("\nAppuyez sur [ENTRÉE] pour commencer le jeu ! ");
+                Console.WriteLine("\nPress [ENTER] to start the game! ");
                 Console.ResetColor();
-                touche = Console.ReadKey();
-                if (touche.Key == ConsoleKey.Escape) goto PasDeChangementDeSession;
+                keyPressed = Console.ReadKey();
+                if (keyPressed.Key == ConsoleKey.Escape) goto Board_Creation;
             }
-            plateau.matrice[pion.positionActuelle.X,pion.positionActuelle.Y] = 5;
-            Stopwatch chronometre = new Stopwatch();
-            chronometre.Start();
+            plateau.Matrix[pawn.CurrentPosition.X,pawn.CurrentPosition.Y] = 5;
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             #endregion
 
-            #region Boucle de jeu
-            while (!pion.EstArrive())if (pion.Deplacement(plateau)) goto PasDeChangementDeSession;
+            #region Game loop
+            while (!pawn.CurrentPosition.Equals(pawn.ArrivalPosition))if (pawn.Displacement(plateau)) goto Board_Creation;
             #endregion
 
-            #region Fin de jeu
-            chronometre.Stop();
-            TimeSpan temps = chronometre.Elapsed;
-            string tempsString = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",temps.Hours, temps.Minutes, temps.Seconds,temps.Milliseconds / 10);
-            if(classement.joueurs.IndexOf(player) != -1)
+            #region End of the game
+            timer.Stop();
+            TimeSpan time = timer.Elapsed;
+            string timeToString = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",time.Hours, time.Minutes, time.Seconds,time.Milliseconds / 10);
+            if(!player.IsNewPlayer())
             {
-                int indice =-1;
-                for(int i = 0; i < classement.joueurs.Count; i++)if(classement.joueurs[i].nom == player.nom) indice = i;
-                switch(Plateau.difficulté)
-                    {
-                        case 'A' : if (player.scores[0] > temps||player.scores[0]==TimeSpan.Zero) classement.joueurs[indice].scores[0] = temps; break;
-                        case 'B' : if (player.scores[1] > temps||player.scores[1]==TimeSpan.Zero) classement.joueurs[indice].scores[1] = temps; break;
-                        case 'C' : if (player.scores[2] > temps||player.scores[2]==TimeSpan.Zero) classement.joueurs[indice].scores[2] = temps; break;
-                        case 'D' : if (player.scores[3] > temps||player.scores[3]==TimeSpan.Zero) classement.joueurs[indice].scores[3] = temps; break;
-                    }
+                int index =player.IndexOfPlayer();
+                if (ranking.PlayersList[index].Scores[Board.s_Difficulty] == TimeSpan.Zero || ranking.PlayersList[index].Scores[Board.s_Difficulty] > time)ranking.PlayersList[index].Scores[Board.s_Difficulty] = time;
+                    
             }else
             {
-                switch(Plateau.difficulté)
-                {
-                    case 'A' : player.scores[0] = temps; break;
-                    case 'B' : player.scores[1] = temps; break;
-                    case 'C' : player.scores[2] = temps; break;
-                    case 'D' : player.scores[3] = temps; break;
-                }
-                classement.joueurs.Add(player);
+                player.Scores[Board.s_Difficulty] = time;
+                ranking.PlayersList.Add(player);
             }
-            StreamWriter sw = new StreamWriter(Classement.path, false);
-            foreach(Joueur joueur in classement.joueurs)sw.Write(joueur+"\n");
-            sw.Close();
+            string[]playersListToString = new string [ranking.PlayersList.Count];
+            foreach (Player p in ranking.PlayersList)playersListToString[ranking.PlayersList.IndexOf(p)] = p.ToString();
+            WriteAllLines(Ranking.s_StoragePath,playersListToString);
             #endregion
 
             #region LeaderBoard
-            Methode.Titre("-- LeaderBoard --",$"Votre score a été enregistré dans le classement du Labyrinthe {Plateau.difficulté} !");
-            for (int i = 0; i < classement.joueurs.Count; i++)
+            Methods.Title("-- LeaderBoard --",$"Your score has been recorded in the Labyrinth leaderboard number {Board.s_Difficulty+1}!");
+            string[]rankingToString = ranking.LeaderBoardSorting();
+            for (int i = 0; i < rankingToString.Length; i++)
             {
                 if(i==0)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine(classement.TriLead()[i]);
+                    Console.WriteLine(rankingToString[i]);
                 }else if (i==1)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine(classement.TriLead()[i]);
+                    Console.WriteLine(rankingToString[i]);
                 }else if (i==2)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine(classement.TriLead()[i]);
+                    Console.WriteLine(rankingToString[i]);
                     Console.ResetColor();
-                }else Console.WriteLine(classement.TriLead()[i]);
+                }else Console.WriteLine(rankingToString[i]);
                 
             }
-            Console.Write($"Votre score est de {tempsString}!\n");
-            
-            Methode.Pause();
+            Console.Write($"\nYour current score is {timeToString}!\n");
+            Methods.Pause();
             #endregion
             
-            #region Nouvelle partie
-            if (Methode.Selection(new string[]{"oui","non"}, "-- Fin de partie --","Souhaitez-vous jouer à nouveau ?")==0)
+            #region New game ?
+            if (Methods.ScrollingMenu(new string[]{"yes ","no  "}, "-- End of the game --","Do you want to play agin?")==0)
             {
-                if (Methode.Selection(new string[]{"oui","non"},"-- Selection de la session --",$"Souhaitez-vous continuer avec la session de jeu {Joueur.nomActuel}")==0)goto PasDeChangementDeSession;
-                else goto ChangementDeSession;
-            }else goto Debut;
+                if (Methods.ScrollingMenu(new string[]{"yes ","no  "},"-- Session selection --",$"Do you want to stay connected to the session {Player.s_SessionName}?")==0)goto Board_Creation;
+                else goto Player_Creation;
+            }else goto Main_Menu;
             #endregion
         }
     }

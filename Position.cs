@@ -4,13 +4,12 @@ namespace Labyrinth
 {
     public class Position
     {
-        
-        #region Attributs
+        #region Attributes
         public int X {get; set;}
         public int Y {get; set;}
         #endregion
 
-        #region Constructeur
+        #region Constructor
         public Position (int a, int b)
         {
             X = a;
@@ -18,16 +17,16 @@ namespace Labyrinth
         }
         #endregion
 
-        #region Méthodes
+        #region Methods
         public override string ToString()
         {
-            return $"Ligne : {X} ; Colonne {Y}";
+            return $"Line : {X} ; Column {Y}";
         }
+
         public bool Equals(Position b)
         {
             return (X == b.X && Y == b.Y);
         }
         #endregion
-    
     }
 }
