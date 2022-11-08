@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using static System.Console;
-using static System.IO.File;
 
 namespace Labyrinth
 {

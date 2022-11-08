@@ -109,18 +109,23 @@ namespace Labyrinth
                 do
                 {
                     Clear();
-                    Title("-- Game session selection --","Please write the name of the session: ");
+                    Title("-- Game session selection --","Please write a new session name: ");
                     player.Name = ReadLine()+String.Empty;
                     if (player.Name.Length<21&&player.Name!=String.Empty)
                     {
                         while(player.Name.Length<20)
                         {
                             player.Name+=" ";
-                            Player.s_SessionName = player.Name;
+                        }
+                        if(!player.IsNewPlayer())
+                        {
+                            WriteLine("\nThis session already exists, please choose another name.");
+                            player.Name = String.Empty;
+                            Pause();
                         }
                     }
                 }while (player.Name == "");
-                
+                Player.CutName = player.Name;
             }else
             {
                 player.Name = ranking.PlayersList[position-1].Name;
@@ -131,6 +136,7 @@ namespace Labyrinth
             Clear();
             return false;
         }
+
         /// <summary>This method is used to apply bonuses.</summary>
         /// <param name="time">The player's time before applying bonuses.</param>
         /// <returns>the time parameter changed after applying bonus that have been taken from the game.</returns>

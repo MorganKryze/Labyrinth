@@ -19,7 +19,7 @@ namespace Labyrinth
         public static int s_Difficulty {get; set; }
         #endregion
 
-        #region Constructor
+        #region Constructors
         /// <summary>This method is used to initialize a new instance of the <see cref="T:Labyrinth.Board"/> class.</summary>
         public Board()
         {

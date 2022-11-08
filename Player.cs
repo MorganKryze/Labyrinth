@@ -14,7 +14,7 @@ namespace Labyrinth
         public List <TimeSpan> Scores {get; set;}
 
         /// <summary>The current session the player is in.</summary>
-        public static string? s_SessionName {get; set;}
+        public static string? s_SessionName {get; private set;}
         #endregion
         
         #region Constructor
