@@ -56,9 +56,11 @@ namespace Labyrinth
         #region Methods
         public void LabyrinthCreationDemonstration()
         {
+            RawPrintBoard();
             int size = Matrix.GetLength(0);
             for(int i = 0; i < size; i+=2)for(int j = 0; j < size; j++)Matrix[i, j] = 1;
             for(int i = 0; i < size; i++)for(int j = 0; j < size; j+=2)Matrix[i, j] = 1;
+            RawPrintBoard();
             FillWithIncrements();
             RawPrintBoard();
             Bridge(true);
