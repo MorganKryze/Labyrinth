@@ -11,6 +11,8 @@ namespace Labyrinth
         public Position Start {get; private set;}
         /// <summary>The ending position.</summary>
         public Position End {get; private set;}
+        /// <summary>The bonus position.</summary>
+        public Position Bonus {get; private set;}
         /// <summary>The board as a matrix.</summary>
         public int[,] Matrix {get; set; }
         /// <summary>The difficulty of the labyrinth.</summary>
@@ -23,6 +25,7 @@ namespace Labyrinth
         {
             Start = new Position(0,0);
             End = new Position(0,0);
+            Bonus = new Position(0,0);
             switch (s_Difficulty)
             {
                 case 0 : Matrix = new int[5,5]; break;
@@ -33,9 +36,43 @@ namespace Labyrinth
             }
             Matrix = MatrixGeneration();
         }
+        /// <summary>This method is used to initialize a new instance of the <see cref="T:Labyrinth.Board"/> class especially for the demonstration.</summary>
+        public Board(int s_Difficulty)
+        {
+            Start = new Position(0,0);
+            End = new Position(0,0);
+            Bonus = new Position(0,0);
+            switch (s_Difficulty)
+            {
+                case 0 : Matrix = new int[5,5]; break;
+                case 1 : Matrix = new int[15,15]; break;
+                case 2 : Matrix = new int[35,35]; break;
+                case 3 : Matrix = new int[55,55]; break;
+                default : Matrix = new int[5,5]; break;
+            }
+        }
         #endregion
 
         #region Methods
+        public void LabyrinthCreationDemonstration()
+        {
+            int size = Matrix.GetLength(0);
+            for(int i = 0; i < size; i+=2)for(int j = 0; j < size; j++)Matrix[i, j] = 1;
+            for(int i = 0; i < size; i++)for(int j = 0; j < size; j+=2)Matrix[i, j] = 1;
+            FillWithIncrements();
+            RawPrintBoard();
+            Bridge(true);
+            SwitchValues(Matrix[1, 1], 0);
+            RawPrintBoard();
+            Matrix[1, 0] = 2;
+            Start = new Position(1,0);
+            Matrix[size - 2, size - 1]=3;
+            End = new Position(size - 2, size - 1);
+            Bonus = new Position(size / 2, size / 2);
+            Matrix[size / 2, size / 2] = 6;
+            RawPrintBoard();
+            PrintBoard();
+        }
         /// <summary>This method is used to generate the matrix representing the board.</summary>
         /// <returns>The generated matrix.</returns>
         private int[,] MatrixGeneration()
@@ -50,6 +87,8 @@ namespace Labyrinth
             Start = new Position(1,0);
             Matrix[size - 2, size - 1]=3;
             End = new Position(size - 2, size - 1);
+            Bonus = new Position(size / 2, size / 2);
+            Matrix[size / 2, size / 2] = 6;
             return Matrix;
         }
         /// <summary>This method is used to fill the matrix with increments so that every empty space is filled with a different value.</summary>
@@ -58,18 +97,18 @@ namespace Labyrinth
             int increment = 2;
             for (int i = 0; i < Matrix.GetLength(0); i++)
             {
-                for (int j = 1; j < Matrix.GetLength(0)-1; j++ , increment++)
+                for (int j = 1; j < Matrix.GetLength(0)-1; j++)
                 {
                     if (Matrix[i,j]==0)
                     {
                         Matrix[i,j]=increment;
-                        
+                        increment++;
                     }
                 }
             }
         }
         /// <summary>This method is used to create a bridge randomly between two lines or two columns.If the values between thses two is different, it breaks the wall and enable to generate the labyrinth step by step.</summary>
-        private void Bridge()
+        private void Bridge(bool demonstration = false)
         {
             List<Position> positions = new List<Position>();
             Random rnd = new Random();
@@ -116,8 +155,9 @@ namespace Labyrinth
                     }
                     cond = true;
                 }
+                if (demonstration)RawPrintBoard();
             }
-            SwitchValues(Matrix[1, 1], 0);
+            
         }
         /// <summary>This method is used to replace the values int the matrix after breaking a wall. This allows the matrix to finally contain exclusively 1(walls) or a value(the paths). This algorithm provides a simple labyrinth where every position in a path is accessible from another.</summary>
         /// <param name="previous">The value to replace.</param>
@@ -152,7 +192,8 @@ namespace Labyrinth
                         case 2 : line += "  ";continue;
                         case 3 : line += "  ";continue;
                         case 4 : line += ". ";continue;
-                        case 5 : line += GamePawn.symbol+" ";continue; 
+                        case 5 : line += GamePawn.s_PawnSymbol+" ";continue;
+                        case 6 : line += GamePawn.s_BonusSymbol+" ";continue;
                     }
                 }
                 if (i == 1)
@@ -187,6 +228,21 @@ namespace Labyrinth
         /// <param name="position">The position to check.</param>
         /// <returns>True if the position is available, false otherwise.</returns>
         public bool IsAvailable(Position position) => (Matrix[position.X,position.Y] == 1 || Matrix[position.X,position.Y] == 5)? false : true;
+        public void RawPrintBoard()
+        {
+            Clear();
+            for(int i = 0; i < Matrix.GetLength(0) ; i++)
+            {
+                BackgroundColor = ConsoleColor.Green;
+                for (int j = 0; j < Matrix.GetLength(0); j++)
+                {
+                    Write(Matrix[i,j]+"  ");
+                }
+                BackgroundColor = ConsoleColor.Black;
+                WriteLine();
+            }
+            ReadKey(false);
+        }
         #endregion
         
     

@@ -57,55 +57,22 @@ namespace Labyrinth
             #endregion
 
             #region Game loop
-            while (!pawn.CurrentPosition.Equals(pawn.ArrivalPosition))if (pawn.Displacement(board)) goto Board_Creation;
+            while (!pawn.CurrentPosition.Equals(pawn.ArrivalPosition))
+            {
+                if (pawn.Displacement(board)==-1) goto Board_Creation;
+                else if (pawn.CurrentPosition.Equals(pawn.BonusPosition))
+                {
+                    GamePawn.s_BonusTaken = true;
+                    pawn.BonusPosition = new Position(-1,-1);
+                }
+            }
+            timer.Stop();
             #endregion
 
             #region End of the game
-            timer.Stop();
-            TimeSpan time = timer.Elapsed;
-            string timeToString = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",time.Hours, time.Minutes, time.Seconds,time.Milliseconds / 10);
-            if(!player.IsNewPlayer())
-            {
-                int index =player.IndexOfPlayer();
-                if (ranking.PlayersList[index].Scores[Board.s_Difficulty] == TimeSpan.Zero || ranking.PlayersList[index].Scores[Board.s_Difficulty] > time)ranking.PlayersList[index].Scores[Board.s_Difficulty] = time;
-                    
-            }else
-            {
-                player.Scores[Board.s_Difficulty] = time;
-                ranking.PlayersList.Add(player);
-            }
-            string[]playersListToString = new string [ranking.PlayersList.Count];
-            foreach (Player p in ranking.PlayersList)playersListToString[ranking.PlayersList.IndexOf(p)] = p.ToString();
-            WriteAllLines(Ranking.s_StoredPath,playersListToString);
+            Methods.LeaderBoardCreation( player, timer,ranking);
             #endregion
 
-            #region LeaderBoard
-            Methods.Title("-- LeaderBoard --",$"Your score has been recorded in the Labyrinth leaderboard number {Board.s_Difficulty+1}!");
-            string[]rankingToString = ranking.LeaderBoardSorting();
-            BackgroundColor = ConsoleColor.Black;
-            for (int i = 0; i < rankingToString.Length; i++)
-            {
-                ForegroundColor = ConsoleColor.White;
-                if(i==0)
-                {
-                    ForegroundColor = ConsoleColor.DarkYellow;
-                    WriteLine(rankingToString[i]);
-                }else if (i==1)
-                {
-                    ForegroundColor = ConsoleColor.Yellow;
-                    WriteLine(rankingToString[i]);
-                }else if (i==2)
-                {
-                    ForegroundColor = ConsoleColor.DarkGray;
-                    WriteLine(rankingToString[i]);
-                    
-                }else Console.WriteLine(rankingToString[i]);
-                
-            }
-            Write($"\nYour current score is {timeToString}!\n");
-            Methods.Pause();
-            #endregion
-            
             #region New game ?
             if (Methods.ScrollingMenu(new string[]{"Yes ","No  "}, "-- End of the game --","Do you want to play agin?")==0)
             {

@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using static System.Console;
 using static System.Environment;
 using static System.Threading.Thread;
 using static System.Convert;
+using static System.IO.File;
 
 namespace Labyrinth
 {
@@ -39,7 +41,19 @@ namespace Labyrinth
                                                      ░░ ░                                              ";
             switch(ScrollingMenu(new string[]{"Play      ","Options   ","Exit      "},"", "Welcome Adventurer! Use the arrow keys to move and press [ENTER] to confirm.",title))
             {
-                case 1 : GamePawn.symbol = Player.ChangeSymbol();break;
+                case 1 : 
+                    switch(ScrollingMenu(new string[]{"Change bonus symbol    ","See Labyrinth creation "},"", "Choose the feature you want to launch:",title))
+                    {
+                        case 0 : GamePawn.s_BonusSymbol = GamePawn.ChangeSymbol(); break;
+                        case 1 : 
+                            Board demonstration = new Board(0);
+                            demonstration.LabyrinthCreationDemonstration();
+                            break;
+                        case -1 : MainMenu();break;
+                    }
+                    Pause();
+                    MainMenu();
+                    break;
                 case 2 : case -1: FinalExit();break;
                 default: break;
             }
@@ -116,6 +130,47 @@ namespace Labyrinth
             ConsoleConfig();
             Clear();
             return false;
+        }
+        /// <summary>This method is used to apply bonuses.</summary>
+        /// <param name="time">The player's time before applying bonuses.</param>
+        /// <returns>the time parameter changed after applying bonus that have been taken from the game.</returns>
+        public static TimeSpan BonusAttribution(TimeSpan time)
+        {
+            if (GamePawn.s_BonusTaken)
+            {
+                switch (Board.s_Difficulty)
+                {
+                    case 0 : time = time.Subtract(new TimeSpan(0,0,0,0,150));break;
+                    case 1 : time = time.Subtract(new TimeSpan(0,0,0,2,0));break;
+                    case 2 : time = time.Subtract(new TimeSpan(0,0,0,10,0));break;
+                    case 3 : time = time.Subtract(new TimeSpan(0,0,0,30,0));break;
+                }
+            } 
+            return time;
+        }
+        /// <summary>This method is used to display the ranking of the current session.</summary>
+        /// <param name="player">The current player.</param>
+        /// <param name="timer">The current time the player has taken.</param>
+        /// <param name="ranking">The ranking of the labyrinth.</param>
+        public static void LeaderBoardCreation(Player player, Stopwatch timer, Ranking ranking)
+        {
+            TimeSpan time = timer.Elapsed;
+            time = BonusAttribution(time);
+            string timeToString = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",time.Hours, time.Minutes, time.Seconds,time.Milliseconds / 10);
+            if(!player.IsNewPlayer())
+            {
+                int index =player.IndexOfPlayer();
+                if (ranking.PlayersList[index].Scores[Board.s_Difficulty] == TimeSpan.Zero || ranking.PlayersList[index].Scores[Board.s_Difficulty] > time)ranking.PlayersList[index].Scores[Board.s_Difficulty] = time;
+                    
+            }else
+            {
+                player.Scores[Board.s_Difficulty] = time;
+                ranking.PlayersList.Add(player);
+            }
+            string[]playersListToString = new string [ranking.PlayersList.Count];
+            foreach (Player p in ranking.PlayersList)playersListToString[ranking.PlayersList.IndexOf(p)] = p.ToString();
+            WriteAllLines(Ranking.s_StoredPath,playersListToString);
+            Ranking.PrintLeaderBoard(ranking, timeToString);
         }
         #endregion
 

@@ -13,8 +13,14 @@ namespace Labyrinth
         public Position CurrentPosition {get; set;}
         /// <summary>The final position of the pawn.</summary>
         public Position ArrivalPosition {get; set;}
+        /// <summary>The positon of the board bonus.</summary>
+        public Position BonusPosition {get; set;}
+        /// <summary>Whether the pawn has the bonus or not.</summary>
+        public static bool s_BonusTaken {get; set;}
+        /// <summary>The symbol of the bonus.</summary>
+        public static char s_BonusSymbol = '';
         /// <summary>The symbol of the pawn.</summary>
-        public static char symbol = '▶';
+        public static char s_PawnSymbol = '▶';
 
         #endregion
 
@@ -25,6 +31,8 @@ namespace Labyrinth
         {
             CurrentPosition = labyrinth.Start;
             ArrivalPosition = labyrinth.End;
+            BonusPosition = labyrinth.Bonus;
+            s_BonusTaken = false;
         }
         #endregion
 
@@ -38,7 +46,7 @@ namespace Labyrinth
         /// <summary>This method is used to recieve the keypressed, and make the pawn move in consequence.</summary>
         /// <param name="labyrinth">The generated board for the game.</param>
         /// <returns>Wether the player has pressed [ESCAPE] and wants to go to the previous page or not.</returns>
-        public bool Displacement(Board labyrinth)
+        public int Displacement(Board labyrinth)
         {
             labyrinth.PrintBoard();
             switch (Console.ReadKey().Key)
@@ -47,9 +55,9 @@ namespace Labyrinth
                 case ConsoleKey.Q : case ConsoleKey.LeftArrow : Movement(labyrinth,2); break;
                 case ConsoleKey.S : case ConsoleKey.DownArrow : Movement(labyrinth,3); break;
                 case ConsoleKey.D : case ConsoleKey.RightArrow : Movement(labyrinth,4); break;
-                case ConsoleKey.Escape : return true;
+                case ConsoleKey.Escape : return -1;
             }
-            return false;
+            return 1;
         }
         /// <summary>This method is used to move the pawn if the next position is available.</summary>
         /// <param name="labyrinth">The generated board for the game.</param>
@@ -60,7 +68,7 @@ namespace Labyrinth
             {
                 case 1 : 
                     Position TemporaryPosition1 = new Position(CurrentPosition.X-1,CurrentPosition.Y);
-                    symbol = '▲';
+                    s_PawnSymbol = '▲';
                     if (labyrinth.IsAvailable(TemporaryPosition1))
                     {
                         labyrinth.Matrix[TemporaryPosition1.X,TemporaryPosition1.Y] = 5;
@@ -69,7 +77,7 @@ namespace Labyrinth
                     }else TemporaryPosition1.X+=1;
                 break;
                 case 2 : 
-                    symbol = '◀';
+                    s_PawnSymbol = '◀';
                     if(CurrentPosition.Equals(labyrinth.Start))break;
                     else 
                     {
@@ -85,7 +93,7 @@ namespace Labyrinth
                 break;
                 case 3 : 
                     Position TemporaryPosition3 = new Position(CurrentPosition.X+1,CurrentPosition.Y);
-                    symbol = '▼';
+                    s_PawnSymbol = '▼';
                     if (labyrinth.IsAvailable(TemporaryPosition3))
                     {
                         labyrinth.Matrix[TemporaryPosition3.X,TemporaryPosition3.Y] = 5;
@@ -95,7 +103,7 @@ namespace Labyrinth
                 break;
                 case 4 :
                     Position TemporaryPosition4 = new Position(CurrentPosition.X,CurrentPosition.Y+1);
-                    symbol = '▶';
+                    s_PawnSymbol = '▶';
                     if (labyrinth.IsAvailable(TemporaryPosition4))
                     {
                         labyrinth.Matrix[TemporaryPosition4.X,TemporaryPosition4.Y] = 5;
@@ -104,6 +112,17 @@ namespace Labyrinth
                     }else TemporaryPosition4.Y-=1;
                 break;
             }
+        }
+        /// <summary>This method is used to change the pawn symbol.</summary>
+        /// <returns>The symbol of the pawn as a char.</returns>
+        public static char ChangeSymbol ()
+        {
+            if(Methods.ScrollingMenu(new string[]{"Yes ","No "},"-- Options --",$"The default symbol for the bonus is {GamePawn.s_BonusSymbol}, would you like to change it?")==0)
+            {
+                Write("\nPlease type your replacement character: ");
+                return ReadKey().KeyChar;
+            }
+            return '';
         }
         #endregion
 

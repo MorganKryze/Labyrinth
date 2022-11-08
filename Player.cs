@@ -74,17 +74,6 @@ namespace Labyrinth
             }
             return -1;
         }
-        /// <summary>This method is used to change the pawn symbol.</summary>
-        /// <returns>The symbol of the pawn as a char.</returns>
-        public static char ChangeSymbol ()
-        {
-            if(Methods.ScrollingMenu(new string[]{"Yes ","No "},"-- Options --","The default pawn is π, would you like to change it?")==0)
-            {
-                Write("\nPlease type your replacement character: ");
-                return ReadKey().KeyChar;
-            }
-            return 'π';
-        }
         #endregion
   
     }

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using static System.Environment;
+using static System.Console;
 
 namespace Labyrinth
 {
@@ -43,6 +44,33 @@ namespace Labyrinth
                 text += "\n";
             }
             return text;
+        }
+        /// <summary>This method is used to display the leaderboard.</summary>
+        public static void PrintLeaderBoard(Ranking ranking, string timeToString)
+        {
+            Methods.Title("-- LeaderBoard --",$"Your score has been recorded in the Labyrinth number {Board.s_Difficulty+1}!");
+            string[]rankingToString = ranking.LeaderBoardSorting();
+            BackgroundColor = ConsoleColor.Black;
+            for (int i = 0; i < rankingToString.Length; i++)
+            {
+                ForegroundColor = ConsoleColor.White;
+                if(i==0)
+                {
+                    ForegroundColor = ConsoleColor.DarkYellow;
+                    WriteLine(rankingToString[i]);
+                }else if (i==1)
+                {
+                    ForegroundColor = ConsoleColor.Yellow;
+                    WriteLine(rankingToString[i]);
+                }else if (i==2)
+                {
+                    ForegroundColor = ConsoleColor.DarkGray;
+                    WriteLine(rankingToString[i]);
+                    
+                }else Console.WriteLine(rankingToString[i]);
+            }
+            Write($"\nYour current score is {timeToString}!\n");
+            Methods.Pause();
         }
         /// <summary>This method is used to sort the ranking according to a labyrinth difficulty.</summary>
         /// <returns>The ranking sorted as a string table.</returns>
