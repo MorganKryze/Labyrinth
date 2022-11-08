@@ -14,7 +14,7 @@ namespace Labyrinth
         /// <summary>The final position of the pawn.</summary>
         public Position ArrivalPosition {get; set;}
         /// <summary>The symbol of the pawn.</summary>
-        public static char symbol = 'π';
+        public static char symbol = '▶';
 
         #endregion
 
@@ -60,6 +60,7 @@ namespace Labyrinth
             {
                 case 1 : 
                     Position TemporaryPosition1 = new Position(CurrentPosition.X-1,CurrentPosition.Y);
+                    symbol = '▲';
                     if (labyrinth.IsAvailable(TemporaryPosition1))
                     {
                         labyrinth.Matrix[TemporaryPosition1.X,TemporaryPosition1.Y] = 5;
@@ -68,16 +69,23 @@ namespace Labyrinth
                     }else TemporaryPosition1.X+=1;
                 break;
                 case 2 : 
-                    Position TemporaryPosition2 = new Position(CurrentPosition.X,CurrentPosition.Y-1);
-                    if (TemporaryPosition2 != new Position(0,0)&&labyrinth.IsAvailable(TemporaryPosition2))
+                    symbol = '◀';
+                    if(CurrentPosition.Equals(labyrinth.Start))break;
+                    else 
                     {
-                        labyrinth.Matrix[TemporaryPosition2.X,TemporaryPosition2.Y] = 5;
-                        labyrinth.Matrix[CurrentPosition.X,CurrentPosition.Y] = 4;
-                        CurrentPosition = TemporaryPosition2;
-                    }else TemporaryPosition2.Y+=1;
+                        Position TemporaryPosition2 = new Position(CurrentPosition.X,CurrentPosition.Y-1);
+                        if (labyrinth.IsAvailable(TemporaryPosition2))
+                        {
+                            labyrinth.Matrix[TemporaryPosition2.X,TemporaryPosition2.Y] = 5;
+                            labyrinth.Matrix[CurrentPosition.X,CurrentPosition.Y] = 4;
+                            CurrentPosition = TemporaryPosition2;
+                            
+                        }else TemporaryPosition2.Y+=1;
+                    }
                 break;
                 case 3 : 
                     Position TemporaryPosition3 = new Position(CurrentPosition.X+1,CurrentPosition.Y);
+                    symbol = '▼';
                     if (labyrinth.IsAvailable(TemporaryPosition3))
                     {
                         labyrinth.Matrix[TemporaryPosition3.X,TemporaryPosition3.Y] = 5;
@@ -87,6 +95,7 @@ namespace Labyrinth
                 break;
                 case 4 :
                     Position TemporaryPosition4 = new Position(CurrentPosition.X,CurrentPosition.Y+1);
+                    symbol = '▶';
                     if (labyrinth.IsAvailable(TemporaryPosition4))
                     {
                         labyrinth.Matrix[TemporaryPosition4.X,TemporaryPosition4.Y] = 5;

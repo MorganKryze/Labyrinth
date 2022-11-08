@@ -54,7 +54,7 @@ namespace Labyrinth
         /// <returns>Wether the player is in the list or not.</returns>
         public bool IsNewPlayer()
         {
-            string[] documentLines = File.ReadAllLines(Ranking.s_StoragePath);
+            string[] documentLines = File.ReadAllLines(Ranking.s_StoredPath);
             for (int i = 0; i < documentLines.Length; i++)
             {
                 string[] playerData = documentLines[i].Split(';');
@@ -66,7 +66,7 @@ namespace Labyrinth
         /// <returns>The index of the player in the list.</returns>
         public int IndexOfPlayer()
         {
-            string[] documentLines = File.ReadAllLines(Ranking.s_StoragePath);
+            string[] documentLines = File.ReadAllLines(Ranking.s_StoredPath);
             for (int i = 0; i < documentLines.Length; i++)
             {
                 string[] playerData = documentLines[i].Split(';');

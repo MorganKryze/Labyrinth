@@ -11,6 +11,10 @@ namespace Labyrinth
         /// <summary>The main method.</summary>
         public static void Main()
         {
+            #region Config
+            Methods.ConsoleConfig();
+            #endregion
+
             Main_Menu :
 
             #region Lobby
@@ -29,31 +33,31 @@ namespace Labyrinth
             Board_Creation :
 
             #region Setting up the board
-            Board.s_Difficulty = Methods.ScrollingMenu(new string[]{"A - Beginner   ","B - Medium     ","C - Tricky     ","D - Expert     "}, "-- Setting the difficulty --","PLease choose wisely the difficulty of the labyrinth: ");
+            Board.s_Difficulty = Methods.ScrollingMenu(new string[]{"A - Beginner   ","B - Medium     ","C - Tricky     ","D - Expert     "}, "-- Setting the difficulty --","Please choose wisely the difficulty of the labyrinth: ");
             if(Board.s_Difficulty == -1) goto Player_Creation;
-            Board plateau = new Board();
-            GamePawn pawn = new GamePawn(plateau);
+            Board board = new Board();
+            GamePawn pawn = new GamePawn(board);
             #endregion
 
             #region Start of the game
             ConsoleKeyInfo keyPressed = new ConsoleKeyInfo();
             while (keyPressed.Key != ConsoleKey.Enter)
             {
-                plateau.PrintBoard();
-                Console.BackgroundColor = ConsoleColor.DarkRed;
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("\nPress [ENTER] to start the game! ");
-                Console.ResetColor();
+                board.PrintBoard();
+                BackgroundColor = ConsoleColor.DarkRed;
+                ForegroundColor = ConsoleColor.White;
+                WriteLine("\nPress [ENTER] to start the game! ");
+                BackgroundColor = ConsoleColor.Black;
                 keyPressed = Console.ReadKey();
                 if (keyPressed.Key == ConsoleKey.Escape) goto Board_Creation;
             }
-            plateau.Matrix[pawn.CurrentPosition.X,pawn.CurrentPosition.Y] = 5;
+            board.Matrix[pawn.CurrentPosition.X,pawn.CurrentPosition.Y] = 5;
             Stopwatch timer = new Stopwatch();
             timer.Start();
             #endregion
 
             #region Game loop
-            while (!pawn.CurrentPosition.Equals(pawn.ArrivalPosition))if (pawn.Displacement(plateau)) goto Board_Creation;
+            while (!pawn.CurrentPosition.Equals(pawn.ArrivalPosition))if (pawn.Displacement(board)) goto Board_Creation;
             #endregion
 
             #region End of the game
@@ -72,31 +76,33 @@ namespace Labyrinth
             }
             string[]playersListToString = new string [ranking.PlayersList.Count];
             foreach (Player p in ranking.PlayersList)playersListToString[ranking.PlayersList.IndexOf(p)] = p.ToString();
-            WriteAllLines(Ranking.s_StoragePath,playersListToString);
+            WriteAllLines(Ranking.s_StoredPath,playersListToString);
             #endregion
 
             #region LeaderBoard
             Methods.Title("-- LeaderBoard --",$"Your score has been recorded in the Labyrinth leaderboard number {Board.s_Difficulty+1}!");
             string[]rankingToString = ranking.LeaderBoardSorting();
+            BackgroundColor = ConsoleColor.Black;
             for (int i = 0; i < rankingToString.Length; i++)
             {
+                ForegroundColor = ConsoleColor.White;
                 if(i==0)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine(rankingToString[i]);
+                    ForegroundColor = ConsoleColor.DarkYellow;
+                    WriteLine(rankingToString[i]);
                 }else if (i==1)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine(rankingToString[i]);
+                    ForegroundColor = ConsoleColor.Yellow;
+                    WriteLine(rankingToString[i]);
                 }else if (i==2)
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine(rankingToString[i]);
-                    Console.ResetColor();
+                    ForegroundColor = ConsoleColor.DarkGray;
+                    WriteLine(rankingToString[i]);
+                    
                 }else Console.WriteLine(rankingToString[i]);
                 
             }
-            Console.Write($"\nYour current score is {timeToString}!\n");
+            Write($"\nYour current score is {timeToString}!\n");
             Methods.Pause();
             #endregion
             

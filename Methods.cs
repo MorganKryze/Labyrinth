@@ -11,6 +11,18 @@ namespace Labyrinth
     abstract class Methods
     {
         #region Core Methods
+        /// <summary> This method is used to set the console configuration. </summary>
+        /// <param name="state"> Wether the config is used as the default config (true) or for the end of the program (false). </param>
+        public static void ConsoleConfig(bool state = true)
+        {
+            if (state)
+            {
+                CursorVisible = false;
+                BackgroundColor = ConsoleColor.Black;
+                ForegroundColor = ConsoleColor.White;
+            }
+            else CursorVisible = true;
+        }
         /// <summary> This method is used to display the main menu of the game.</summary>
         public static void MainMenu()
         {
@@ -101,7 +113,7 @@ namespace Labyrinth
                 player.Scores = ranking.PlayersList[position-1].Scores;
                 Player.CutName = player.Name;
             }
-            ResetColor();
+            ConsoleConfig();
             Clear();
             return false;
         }
@@ -123,7 +135,7 @@ namespace Labyrinth
                 Clear();
                 WriteLine($"{text}\n");
                 int t_interval = 2000/text.Length;
-                ForegroundColor = ConsoleColor.DarkRed;
+                ForegroundColor = ConsoleColor.Red;
                 char[]loadingBar = new char[text.Length];
                 for (int k = 0; k <= loadingBar.Length-1; k++)
                 {
@@ -147,7 +159,7 @@ namespace Labyrinth
                     Write($" {(int)percentage} %\n");
                     Sleep(t_interval);
                 }
-                ResetColor();
+                ConsoleConfig();
             }
             Clear();
         }
@@ -214,11 +226,13 @@ namespace Labyrinth
                     {
                         currentChoice[i] = $" > {choices[i]}";
                         BackgroundColor = ConsoleColor.Green;
+                        ForegroundColor = ConsoleColor.Black;
                         WriteLine(currentChoice[i]);
-                        ResetColor();
+                        ConsoleConfig();
                     }
                     else 
                     {
+                        
                         currentChoice [i]= $"   {choices[i]}";
                         WriteLine(currentChoice[i]);
                     }
@@ -241,6 +255,7 @@ namespace Labyrinth
             Clear();
             LoadingScreen("-- Shutting off --");
             Clear();
+            ConsoleConfig(false);
             Exit(0);
         }
         #endregion

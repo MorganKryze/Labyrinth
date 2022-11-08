@@ -140,48 +140,48 @@ namespace Labyrinth
             Clear();
             for(int i = 0; i < Matrix.GetLength(0) ; i++)
             {
-                BackgroundColor = ConsoleColor.Green;
+                BackgroundColor = ConsoleColor.Black;
                 ForegroundColor = ConsoleColor.Black;
-                if (i == 1||i == Matrix.GetLength(0)-2)
+                string line = "";
+                for (int j = 0; j < Matrix.GetLength(0); j++)
                 {
-                    for (int j = 0; j < Matrix.GetLength(0); j++)
-                    {
                     switch(Matrix[i,j])
                     {
-                        case 0 : Write(" ");break;
-                        case 1 : Write("#");break;
-                        case 2 : BackgroundColor = ConsoleColor.DarkRed;ForegroundColor = ConsoleColor.White;Write("d");break;
-                        case 3 : BackgroundColor = ConsoleColor.DarkBlue;ForegroundColor = ConsoleColor.White;Write("a");break;
-                        case 4 : Write(".");break;
-                        case 5 : Write(GamePawn.symbol);break; 
-                        default : break;
+                        case 0 : line += "  ";break;
+                        case 1 : line += "# ";break;
+                        case 2 : line += "  ";continue;
+                        case 3 : line += "  ";continue;
+                        case 4 : line += ". ";continue;
+                        case 5 : line += GamePawn.symbol+" ";continue; 
                     }
+                }
+                if (i == 1)
+                {
+                    BackgroundColor = ConsoleColor.Red;
+                    ForegroundColor = ConsoleColor.Black;
+                    Write("Start → ");
                     BackgroundColor = ConsoleColor.Green;
                     ForegroundColor = ConsoleColor.Black;
-                    Write(" ");
-                    }
-                    WriteLine();
-                }else 
+                    WriteLine(line);
+                    
+                }
+                else if (i == Matrix.GetLength(0)-2)
                 {
-                    string retour = "";
-                    for (int j = 0; j < Matrix.GetLength(0); j++)
-                    {
-                        switch(Matrix[i,j])
-                        {
-                            case 0 : retour += ' ';break;
-                            case 1 : retour += '#';break;
-                            case 2 : retour += 'd';break;
-                            case 3 : retour += 'a';break;
-                            case 4 : retour += '.';break;
-                            case 5 : retour += GamePawn.symbol;break; 
-                            default : break;
-                        }
-                        retour+= " ";
-                    }
-                    WriteLine(retour);
+                    Write("\t");
+                    BackgroundColor = ConsoleColor.Green;
+                    Write(line);
+                    BackgroundColor = ConsoleColor.Blue;
+                    ForegroundColor = ConsoleColor.Black;
+                    WriteLine(" → Exit");
+                }       
+                else 
+                {
+                    Write("\t");
+                    BackgroundColor = ConsoleColor.Green;
+                    WriteLine(line);
                 }
             }
-            ResetColor();
+            Methods.ConsoleConfig();
         }
         /// <summary>This method is used to check if a position is available in the matrix.</summary>
         /// <param name="position">The position to check.</param>
