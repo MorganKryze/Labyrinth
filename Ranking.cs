@@ -13,7 +13,7 @@ namespace Labyrinth
         /// <summary>The list in which the players are stored.</summary>
         public List<Player> PlayersList {get; set;}
         /// <summary>The path of the file where the ranking is stored.</summary>
-        public static string s_StoredPath = "Storage.txt";
+        public static string s_StoredPath = "LeaderBoard.txt";
         #endregion
 
         #region Constructor
